@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Performance Predictor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 36px 40px;
+      max-width: 700px;
+      width: 100%;
+      color: #fff;
+    }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 6px; color: #e2e8f0; }
+    .subtitle { color: #94a3b8; font-size: 0.95rem; margin-bottom: 28px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    label { display: block; font-size: 0.82rem; color: #94a3b8; margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    input, select {
+      width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
+      color: #fff; font-size: 0.95rem; outline: none; transition: border 0.2s;
+    }
+    input:focus, select:focus { border-color: #60a5fa; }
+    select option { background: #1e293b; }
+    .toggle-group { display: flex; gap: 10px; }
+    .toggle-btn {
+      flex: 1; padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08); color: #94a3b8; cursor: pointer;
+      font-size: 0.9rem; transition: all 0.2s; text-align: center;
+    }
+    .toggle-btn.active { background: #3b82f6; border-color: #3b82f6; color: #fff; font-weight: 600; }
+    .btn {
+      width: 100%; margin-top: 24px; padding: 14px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border: none; border-radius: 12px; color: #fff;
+      font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .result-box {
+      margin-top: 24px; padding: 22px; border-radius: 14px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+      display: none;
+    }
+    .result-box.show { display: block; }
+    .result-title { font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
+    .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .metric { text-align: center; }
+    .metric-value { font-size: 2rem; font-weight: 800; }
+    .metric-value.pass { color: #34d399; }
+    .metric-value.fail { color: #f87171; }
+    .metric-value.blue { color: #60a5fa; }
+    .metric-label { font-size: 0.78rem; color: #94a3b8; margin-top: 4px; }
+    .error { color: #f87171; font-size: 0.9rem; margin-top: 12px; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>🎓 Student Performance Predictor</h1>
+  <p class="subtitle">Enter student details to predict marks and pass/fail result</p>
+
+  <div class="grid">
+    <div>
+      <label>Study Hours / Day</label>
+      <input type="number" id="study_hours" min="0" max="16" step="0.5" placeholder="e.g. 5" value="5"/>
+    </div>
+    <div>
+      <label>Attendance (%)</label>
+      <input type="number" id="attendance" min="0" max="100" step="1" placeholder="e.g. 80" value="80"/>
+    </div>
+    <div>
+      <label>Previous Score</label>
+      <input type="number" id="previous_score" min="0" max="100" step="0.5" placeholder="e.g. 65" value="65"/>
+    </div>
+    <div>
+      <label>Sleep Hours / Day</label>
+      <input type="number" id="sleep_hours" min="0" max="12" step="0.5" placeholder="e.g. 7" value="7"/>
+    </div>
+    <div>
+      <label>Extra Activities</label>
+      <div class="toggle-group">
+        <div class="toggle-btn active" onclick="toggle('extra_activities', 1, this)">Yes</div>
+        <div class="toggle-btn" onclick="toggle('extra_activities', 0, this)">No</div>
+      </div>
+      <input type="hidden" id="extra_activities" value="1"/>
+    </div>
+    <div>
+      <label>Internet Access</label>
+      <div class="toggle-group">
+        <div class="toggle-btn active" onclick="toggle('internet_access', 1, this)">Yes</div>
+        <div class="toggle-btn" onclick="toggle('internet_access', 0, this)">No</div>
+      </div>
+      <input type="hidden" id="internet_access" value="1"/>
+    </div>
+    <div>
+      <label>Family Support</label>
+      <select id="family_support">
+        <option value="low">Low</option>
+        <option value="medium" selected>Medium</option>
+        <option value="high">High</option>
+      </select>
+    </div>
+    <div>
+      <label>Gender</label>
+      <select id="gender">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="btn" onclick="predict()" id="predict-btn">🔮 Predict Performance</button>
+  <p class="error" id="error-msg"></p>
+
+  <div class="result-box" id="result-box">
+    <p class="result-title">📊 Prediction Results</p>
+    <div class="result-grid">
+      <div class="metric">
+        <div class="metric-value blue" id="res-marks">—</div>
+        <div class="metric-label">Predicted Marks</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value" id="res-result">—</div>
+        <div class="metric-label">Pass / Fail</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value blue" id="res-prob">—</div>
+        <div class="metric-label">Pass Probability</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggle(fieldId, value, btn) {
+    document.getElementById(fieldId).value = value;
+    btn.closest('.toggle-group').querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  async function predict() {
+    const btn = document.getElementById('predict-btn');
+    const err = document.getElementById('error-msg');
+    err.textContent = '';
+    btn.disabled = true;
+    btn.textContent = '⏳ Predicting...';
+
+    const payload = {
+      study_hours:     document.getElementById('study_hours').value,
+      attendance:      document.getElementById('attendance').value,
+      previous_score:  document.getElementById('previous_score').value,
+      sleep_hours:     document.getElementById('sleep_hours').value,
+      extra_activities: document.getElementById('extra_activities').value,
+      internet_access:  document.getElementById('internet_access').value,
+      family_support:   document.getElementById('family_support').value,
+      gender:           document.getElementById('gender').value,
+    };
+
+    try {
+      const res  = await fetch('/predict', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+
+      const r = data.result;
+      document.getElementById('res-marks').textContent = r.predicted_marks.toFixed(1);
+      const resEl = document.getElementById('res-result');
+      resEl.textContent = r.pass_fail;
+      resEl.className = 'metric-value ' + (r.pass_fail === 'Pass' ? 'pass' : 'fail');
+      document.getElementById('res-prob').textContent = r.pass_probability + '%';
+      document.getElementById('result-box').classList.add('show');
+    } catch(e) {
+      err.textContent = '❌ Error: ' + e.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '🔮 Predict Performance';
+    }
+  }
+</script>
+</body>
+</html>
