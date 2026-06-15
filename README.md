@@ -264,9 +264,3 @@ This project demonstrates:
 * End-to-End Machine Learning Pipeline
 
 ---
-
-## 👨‍💻 Author
-
-Developed as an end-to-end Machine Learning project to showcase practical implementation of predictive analytics in education.
-
-If you found this project useful, consider giving it a ⭐ on GitHub.
