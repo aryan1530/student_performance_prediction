@@ -141,7 +141,12 @@ cd student-performance-prediction
 python -m venv venv
 venv\Scripts\activate
 ```
- venv/bin/activate
+
+#### Linux / macOS
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
 ```
 
 ### 3. Install Dependencies
@@ -266,3 +271,9 @@ This project demonstrates:
 * End-to-End Machine Learning Pipeline
 
 ---
+
+## 👨‍💻 Author
+
+Developed as an end-to-end Machine Learning project to showcase practical implementation of predictive analytics in education.
+
+If you found this project useful, consider giving it a ⭐ on GitHub.
