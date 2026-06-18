@@ -2,6 +2,8 @@
 
 A Machine Learning-powered web application that analyzes student-related factors and predicts academic performance using both regression and classification techniques. The project demonstrates a complete end-to-end ML workflow, including data generation, preprocessing, model training, evaluation, visualization, and deployment through a user-friendly web interface.
 
+Live Demo → https://student-performance-prediction-p4qz.onrender.com/
+
 ---
 
 ## 📌 Project Overview
